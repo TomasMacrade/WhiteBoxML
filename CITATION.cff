@@ -4,8 +4,8 @@ message: "Si utilizás WhiteBoxML en investigación, docencia o proyectos comerc
 type: software
 authors:
   - name: WhiteBoxML Contributors
-repository-code: https://github.com/TU-USUARIO/WhiteBoxML
-url: https://github.com/TU-USUARIO/WhiteBoxML
+repository-code: https://github.com/TomasMacrade/WhiteBoxML
+url: https://github.com/TomasMacradeO/WhiteBoxML
 license: MIT
 version: 0.1.0
 date-released: 2026-02-26
