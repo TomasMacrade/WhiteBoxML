@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: WhiteBoxML
+message: "Si utilizás WhiteBoxML en investigación, docencia o proyectos comerciales, por favor citá el proyecto de la siguiente manera."
+type: software
+authors:
+  - name: WhiteBoxML Contributors
+repository-code: https://github.com/TU-USUARIO/WhiteBoxML
+url: https://github.com/TU-USUARIO/WhiteBoxML
+license: MIT
+version: 0.1.0
+date-released: 2026-02-26
