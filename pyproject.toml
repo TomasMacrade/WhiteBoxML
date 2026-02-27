@@ -17,6 +17,7 @@ matplotlib = "^3.8"
 pytest = "^8.0"
 pre-commit = "^3.0"
 ruff = "^0.3"
+jupyter = "^1.0"
 
 [build-system]
 requires = ["poetry-core>=1.8.0"]
