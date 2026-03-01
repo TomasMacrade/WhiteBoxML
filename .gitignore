@@ -1,0 +1,21 @@
+# Compilaciones
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+.venv/
+venv/
+ENV/
+
+# Testing cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+
+# OS
+.DS_Store
+.vscode/
+.idea/
+.env
