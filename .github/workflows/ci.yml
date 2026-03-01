@@ -48,3 +48,27 @@ jobs:
 
       - name: Check contributors file is up to date
         run: git diff --exit-code CONTRIBUTORS.md
+
+
+PrecommitCheck:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Install Poetry
+      run: pip install poetry
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Install pre-commit hooks
+      run: poetry run pre-commit install --install-hooks
+
+    - name: Run all pre-commit hooks
+      run: poetry run pre-commit run --all-files

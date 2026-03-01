@@ -27,11 +27,14 @@ for path in ROOT.rglob("*.py"):
             if clean_author:
                 authors.add(clean_author)
 
-authors = sorted(authors)
+authors_set = authors
+authors_list = sorted(authors_set)
 
 with OUTPUT_FILE.open("w", encoding="utf-8") as f:
     f.write("# Contributors\n\n")
-    for author in authors:
+    for author in authors_list:
         f.write(f"- {author}\n")
 
 print("CONTRIBUTORS.md generated successfully.")
+for author in authors_list:
+    print(f"Contribución de {author} encontrada!")
