@@ -12,6 +12,7 @@ ENV/
 .pytest_cache/
 .coverage
 htmlcov/
+*cache*
 
 
 # OS
