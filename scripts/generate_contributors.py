@@ -1,5 +1,8 @@
 """
 Script para mantener actualizado el CONTRIBUTORS.md automáticamente.
+
+:authors: Tomás Macrade
+:date: 01/03/2026
 """
 
 import re

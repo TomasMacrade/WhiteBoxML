@@ -33,6 +33,7 @@ Este README explica, de forma práctica y breve, qué contiene este repositorio,
   - `tests/` — tests de pytest (`tests/test_*.py`).  
   - `examples/` — scripts de ejemplo para ejecutar y entender uso básico.  
   - `sideproyects/` — aplicaciones interesantes de ML
+  - `scripts/` - funciones auxiliares para mantenimiento del repositorio y CI.
 
 ---
 
@@ -105,12 +106,14 @@ poetry run pytest
 
 - Leé CONTRIBUTING.md y MANIFIESTO.md para entender las reglas y la cultura del proyecto.
 
-- Creá una rama con convención feature/<area>-<descripción> o fix/<area>-<descripción>.
+- Creá una rama con convención feature/area-descripción o fix/area-descripción.
 
 - Implementá la funcionalidad con docstrings Sphinx/reST (:param:, :type:, :return:) y tipado cuando aplique.
 
 - Incluí tests en tests/.
 
 - Ejecutá pre-commit y pytest localmente.
+
+- Ejecutá los scripts necesarios para CI (dentro de `scripts/`)
 
 - Abrí un Pull Request con descripción clara y checklist (tests incluidos, docstrings, pre-commit pasado)

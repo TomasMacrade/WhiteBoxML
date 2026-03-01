@@ -12,6 +12,7 @@ python = "^3.10"
 numpy = "^1.26"
 pandas = "^2.2"
 matplotlib = "^3.8"
+pre-commit = "^3.3.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
@@ -33,3 +34,6 @@ ignore = []
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
+
+[tool.poetry.scripts]
+install-hooks = "pre_commit:main"

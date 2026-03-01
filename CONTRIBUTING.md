@@ -78,6 +78,15 @@ def funcion(a: np.ndarray, b: np.ndarray) -> np.ndarray:
 
 - : references :
 
+## Scripts
+
+En la carpeta  de  scripts, usada para funciones auxiliares de CI u
+otras funcionalidades externas a la librería, es obligatorio incluir:
+
+- *: authors :* para cada autor del proyecto
+
+- *: date :*
+
 # 4. Estándar para modelos
 
 Todo modelo público debe implementar:
@@ -129,9 +138,9 @@ PRs con fallos en CI no serán mergeados.
 
 **Ramas:**
 
-- feature/<area>-<descripcion>
+- feature/area-descripcion
 
-- fix/<area>-<descripcion>
+- fix/area-descripcion
 
 Ejemplo:
 
