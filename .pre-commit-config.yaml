@@ -1,25 +1,19 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: stable
+    rev: 24.2.0
     hooks:
       - id: black
-      
-  - repo: https://github.com/PyCQA/isort
-    rev: stable
-    hooks:
-      - id: isort
-      
-  - repo: https://github.com/pycqa/ruff
-    rev: stable
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.7
     hooks:
       - id: ruff
-      
+
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.9.0
     hooks:
       - id: mypy
-        additional_dependencies: ["types-numpy"]
-        
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:

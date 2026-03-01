@@ -114,4 +114,3 @@ poetry run pytest
 - Ejecutá pre-commit y pytest localmente.
 
 - Abrí un Pull Request con descripción clara y checklist (tests incluidos, docstrings, pre-commit pasado)
-
