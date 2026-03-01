@@ -25,3 +25,9 @@ jobs:
 
       - name: Run tests
         run: poetry run pytest
+
+      - name: Generate contributors file
+        run: poetry run python scripts/generate_contributors.py
+
+      - name: Check contributors file is up to date
+        run: git diff --exit-code CONTRIBUTORS.md

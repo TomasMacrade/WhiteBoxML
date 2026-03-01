@@ -20,3 +20,11 @@ repos:
       - id: check-ast
       - id: end-of-file-fixer
       - id: check-yaml
+      
+  - repo: local
+    hooks:
+      - id: generate-contributors
+        name: Generate contributors
+        entry: poetry run python scripts/generate_contributors.py
+        language: system
+        pass_filenames: false
