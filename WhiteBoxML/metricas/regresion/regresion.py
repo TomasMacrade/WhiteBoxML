@@ -16,13 +16,10 @@ Incluye:
 import numpy as np
 from numpy.typing import ArrayLike
 
-from WhiteBoxML.utils import _validacion_inputs
+from whiteboxml.utils import _validacion_inputs
 
 
-def mean_squared_error(
-    y_true: ArrayLike,
-    y_pred: ArrayLike
-    ) -> float:
+def mean_squared_error(y_true: ArrayLike, y_pred: ArrayLike) -> float:
     """
     Cálculo del error cuadrático medio.
 
@@ -33,15 +30,13 @@ def mean_squared_error(
     :date: 27/02/2026
     """
 
-    vector_true,vector_pred = _validacion_inputs(y_true,y_pred)
-    
-    mse = np.mean((vector_true - vector_pred)**2)
+    vector_true, vector_pred = _validacion_inputs(y_true, y_pred)
+
+    mse = np.mean((vector_true - vector_pred) ** 2)
     return float(mse)
 
-def mean_absolute_error(
-    y_true: ArrayLike,
-    y_pred: ArrayLike
-    ) -> float:
+
+def mean_absolute_error(y_true: ArrayLike, y_pred: ArrayLike) -> float:
     """
     Cálculo del error absoluto medio.
 
@@ -52,15 +47,13 @@ def mean_absolute_error(
     :date: 27/02/2026
     """
 
-    vector_true,vector_pred = _validacion_inputs(y_true,y_pred)
-    
+    vector_true, vector_pred = _validacion_inputs(y_true, y_pred)
+
     mae = np.mean(np.abs(vector_true - vector_pred))
     return float(mae)
 
-def r2(
-    y_true: ArrayLike,
-    y_pred: ArrayLike
-    ) -> float:
+
+def r2(y_true: ArrayLike, y_pred: ArrayLike) -> float:
     """
     Cálculo del coeficiente de determinación.
 
@@ -71,18 +64,14 @@ def r2(
     :date: 27/02/2026
     """
 
-    vector_true,vector_pred = _validacion_inputs(y_true,y_pred)
+    vector_true, vector_pred = _validacion_inputs(y_true, y_pred)
     residuals = vector_true - vector_pred
-    mse = np.mean(residuals ** 2)
+    mse = np.mean(residuals**2)
     var = np.var(vector_true)
     if var == 0:
         raise ValueError(
-            "El coeficiente de determinación no está definido cuando la varianza de y_true es cero."
+            "El coeficiente de determinación no está definido "
+            "cuando la varianza de y_true es cero."
         )
-    r2 = 1 - mse/var
+    r2 = 1 - mse / var
     return float(r2)
-
-    
-
-
-

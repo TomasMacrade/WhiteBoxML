@@ -8,15 +8,17 @@ a arrays de NumPy y verificación de consistencia dimensional).
 Estas funciones son utilizadas por las métricas públicas del
 paquete y no forman parte de la API expuesta al usuario.
 """
+
 from typing import Literal
 
 import numpy as np
 from numpy.typing import ArrayLike
 
+
 def _validacion_inputs(
     array1: ArrayLike,
     array2: ArrayLike,
-    ) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Valida y prepara los inputs para métricas de regresión.
 
@@ -30,18 +32,16 @@ def _validacion_inputs(
         array1 = np.asarray(array1)
         array2 = np.asarray(array2)
     except Exception as e:
-        raise ValueError(
-            "Los inputs deben ser convertibles a arrays de NumPy."
-        ) from e
+        raise ValueError("Los inputs deben ser convertibles a arrays de NumPy.") from e
 
-    for array in (array1,array2):
+    for array in (array1, array2):
         if array.ndim == 2 and 1 in array.shape:
             array = array.reshape(-1)
         elif array.ndim != 1:
             raise ValueError(
                 "Los inputs deben ser vectores 1D o matrices columna/fila."
             )
-    
+
     if array1.shape != array2.shape:
         raise ValueError(
             "Los inputs deben tener la misma cantidad de elementos. "
@@ -51,11 +51,11 @@ def _validacion_inputs(
 
     return array1, array2
 
-def _validacion_average(
-    average: str | None
-    ) -> str | None:
+
+def _validacion_average(average: str | None) -> str | None:
     """
-    Check sobre los valores del parámetro average y normalización en caso de ser necesario.
+    Check sobre los valores del parámetro average y
+    normalización en caso de ser necesario.
 
     :param average: parámetro average
     :authors: Tomás Macrade
@@ -63,28 +63,30 @@ def _validacion_average(
     """
     if average is None:
         return None
-    
+
     if not isinstance(average, str):
         raise TypeError("average debe ser str o None.")
 
     average = average.strip().lower().replace(",", "")
 
-    if average not in ("binary","micro", "macro", "weighted", None):
+    if average not in ("binary", "micro", "macro", "weighted", None):
         raise ValueError(
-            'El parámetro average debe ser "binary", "micro", "macro", "weighted" o None.'
+            'El parámetro average debe ser "binary", '
+            '"micro", "macro", "weighted" o None.'
         )
-    
+
     return average
 
 
 def _compute_metric_components(
     y_true: np.ndarray,
-    y_pred: np.ndarray, 
+    y_pred: np.ndarray,
     classes: np.ndarray,
-    metrics: list[Literal["FP", "TP", "FN"]]
-    ) -> np.ndarray:
+    metrics: list[Literal["FP", "TP", "FN"]],
+) -> np.ndarray:
     """
-    Cálculo de las tasas de falsos positivos, falsos negativos y verdaderos positivos por clase.
+    Cálculo de las tasas de falsos positivos,
+    falsos negativos y verdaderos positivos por clase.
 
     :param y_true: targets reales
     :param y_pred: targets predichos
@@ -109,5 +111,3 @@ def _compute_metric_components(
         counts.append(metric_list)
     counts = np.array(counts)
     return counts
-
-

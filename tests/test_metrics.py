@@ -1,10 +1,11 @@
 """
 Tests del módulo de métricas
 """
+
 import numpy as np
 import pytest
 
-from WhiteBoxML import metricas
+from whiteboxml import metricas
 
 
 def test_accuracy_perfect():
@@ -30,6 +31,7 @@ def test_accuracy_partial():
     y_pred = [1, 1, 0, 1]
     expected = 0.5
     assert metricas.accuracy(y_true, y_pred) == pytest.approx(float(expected))
+
 
 def test_precision_binary_basic():
     """
@@ -65,7 +67,9 @@ def test_precision_micro_equals_accuracy():
     y_true = [0, 1, 2, 2]
     y_pred = [0, 2, 2, 1]
     expected = float(np.mean(np.array(y_true) == np.array(y_pred)))
-    assert metricas.precision(y_true, y_pred, average="micro") == pytest.approx(expected)
+    assert metricas.precision(y_true, y_pred, average="micro") == pytest.approx(
+        expected
+    )
 
 
 def test_precision_macro_and_weighted_and_none():
@@ -79,7 +83,9 @@ def test_precision_macro_and_weighted_and_none():
     y_pred = [0, 2, 1, 0]
     per_class = np.array([1.0, 0.0, 0.0])
 
-    assert metricas.precision(y_true, y_pred, average="macro") == pytest.approx(np.mean(per_class))
+    assert metricas.precision(y_true, y_pred, average="macro") == pytest.approx(
+        np.mean(per_class)
+    )
     assert metricas.precision(y_true, y_pred, average="weighted") == pytest.approx(0.5)
     arr = metricas.precision(y_true, y_pred, average=None)
     assert isinstance(arr, np.ndarray)
@@ -93,7 +99,7 @@ def test_recall_micro_equals_accuracy_default():
     :authors: Tomás Macrade
     :date: 28/02/2026
     """
-    
+
     y_true = [0, 1, 1, 2]
     y_pred = [0, 1, 0, 2]
     expected = float(np.mean(np.array(y_true) == np.array(y_pred)))
@@ -109,7 +115,9 @@ def test_recall_binary_basic():
 
     y_true = [1, 0, 1, 1]
     y_pred = [1, 0, 0, 1]
-    assert metricas.recall(y_true, y_pred, average="binary", pos_label=1) == pytest.approx(2 / 3)
+    assert metricas.recall(
+        y_true, y_pred, average="binary", pos_label=1
+    ) == pytest.approx(2 / 3)
 
 
 def test_recall_macro_and_weighted_and_none():
@@ -123,7 +131,9 @@ def test_recall_macro_and_weighted_and_none():
     y_pred = [0, 2, 1, 0]
     per_class = np.array([1.0, 0.0, 0.0])
 
-    assert metricas.recall(y_true, y_pred, average="macro") == pytest.approx(np.mean(per_class))
+    assert metricas.recall(y_true, y_pred, average="macro") == pytest.approx(
+        np.mean(per_class)
+    )
     assert metricas.recall(y_true, y_pred, average="weighted") == pytest.approx(0.5)
     arr = metricas.recall(y_true, y_pred, average=None)
     assert isinstance(arr, np.ndarray)
