@@ -37,8 +37,7 @@ def accuracy(y_true: ArrayLike, y_pred: ArrayLike) -> float:
     """
 
     vector_true, vector_pred = _validacion_inputs(y_true, y_pred)
-    accuracy = np.mean(vector_true == vector_pred)
-    return float(accuracy)
+    return float(np.mean(vector_true == vector_pred))
 
 
 def precision(
@@ -111,8 +110,10 @@ def precision(
             per_class_precision = np.nan_to_num(tp / (tp + fp))
         return per_class_precision
 
-    else:
-        raise ValueError("Invalid average")
+    raise ValueError(
+        'El parámetro average debe ser "binary", '
+        '"micro", "macro", "weighted" o None.'
+    )
 
 
 def recall(
@@ -183,5 +184,7 @@ def recall(
             per_class_recall = np.nan_to_num(tp / (tp + fn))
         return per_class_recall
 
-    else:
-        raise ValueError("Invalid average")
+    raise ValueError(
+        'El parámetro average debe ser "binary", '
+        '"micro", "macro", "weighted" o None.'
+    )

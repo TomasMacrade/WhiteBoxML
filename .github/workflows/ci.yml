@@ -72,3 +72,9 @@ jobs:
 
       - name: Run all pre-commit hooks
         run: poetry run pre-commit run --all-files
+
+  CoverageCheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests with coverage
+        run: poetry run pytest --cov=whiteboxml --cov-report=term-missing --cov-fail-under=80

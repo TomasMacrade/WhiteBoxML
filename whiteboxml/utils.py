@@ -101,6 +101,9 @@ def _compute_metric_components(
     for cls in classes:
         metric_list = []
         for m in metrics:
+
+            counter: int = 0
+
             if m == "TP":
                 counter = np.sum((y_pred == cls) & (y_true == cls))
             elif m == "FP":

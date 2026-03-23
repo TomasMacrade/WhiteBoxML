@@ -1,5 +1,5 @@
 """
-WhiteBoxML: métricas y herramientas de machine learning explicables.
+WhiteBoxML: Librería de machine learning
 """
 
 from whiteboxml import metricas
