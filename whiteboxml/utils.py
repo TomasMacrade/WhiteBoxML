@@ -7,6 +7,9 @@ a arrays de NumPy y verificación de consistencia dimensional).
 
 Estas funciones son utilizadas por las métricas públicas del
 paquete y no forman parte de la API expuesta al usuario.
+
+:authors: Tomás Macrade
+:date: 27/02/2026
 """
 
 from typing import Literal

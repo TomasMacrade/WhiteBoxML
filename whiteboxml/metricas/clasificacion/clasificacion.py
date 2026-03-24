@@ -11,6 +11,9 @@ Incluye:
 - Accuracy
 - Precision
 - Recall
+
+:authors: Tomás Macrade
+:date: 28/02/2026
 """
 
 from typing import Any

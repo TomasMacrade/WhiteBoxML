@@ -12,10 +12,11 @@ obligatorias de autoría y fecha.
 import ast
 import sys
 
+
 def check_docstring(docstring, label, path, line_no):
     """
     Valida si las etiquetas existen en un docstring dado.
-    
+
     :param docstring: contenido del string de documentación
     :param label: nombre del elemento (módulo/función) para el error
     :param path: ruta del archivo
@@ -27,17 +28,18 @@ def check_docstring(docstring, label, path, line_no):
     errors = []
     if not docstring:
         return [f"{path}:{line_no}: Falta el docstring en {label}."]
-    
+
     if ":authors:" not in docstring:
         errors.append(f"{path}:{line_no}: Falta la etiqueta ':authors:' en {label}")
     if ":date:" not in docstring:
         errors.append(f"{path}:{line_no}: Falta la etiqueta ':date:' en {label}")
     return errors
 
+
 def check_file(path):
     """
     Parsea un archivo y busca docstrings en módulo, clases y funciones.
-    
+
     :param path: ruta del archivo .py a revisar
     :authors: Tomás Macrade
     :date: 24/03/2026
@@ -47,7 +49,7 @@ def check_file(path):
             tree = ast.parse(f.read())
         except SyntaxError:
             return [f"{path}:0: Error de sintaxis al parsear el archivo."]
-    
+
     file_errors = []
 
     module_doc = ast.get_docstring(tree)
@@ -56,15 +58,18 @@ def check_file(path):
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
             node_doc = ast.get_docstring(node)
-            file_errors.extend(check_docstring(node_doc, f"'{node.name}'", path, node.lineno))
-                
+            file_errors.extend(
+                check_docstring(node_doc, f"'{node.name}'", path, node.lineno)
+            )
+
     return file_errors
+
 
 if __name__ == "__main__":
     all_errors = []
     for arg in sys.argv[1:]:
         all_errors.extend(check_file(arg))
-    
+
     if all_errors:
         for err in all_errors:
             print(err)

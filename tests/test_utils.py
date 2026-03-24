@@ -23,19 +23,31 @@ def test_conversion_exitosa():
     assert a1.shape == (3,)
     assert np.array_equal(a1, [1, 2, 3])
 
+
 def test_exception_conversion_array():
     """
     Test exception en conversión array
     :authors: Tomás Macrade
     :date: 24/03/2026
     """
+
     class ObjetoRoto:
+        """
+        Clase genérica para testing
+
+        :authors: Tomás Macrade
+        :date: 24/03/2026
+        """
+
         def __len__(self):
             return 10
-        def __getitem__(self):
+
+        def __getitem__(self, item):
             raise RuntimeError("Fallo forzado")
 
-    with pytest.raises(ValueError, match="Los inputs deben ser convertibles a arrays de NumPy."):
+    with pytest.raises(
+        ValueError, match="Los inputs deben ser convertibles a arrays de NumPy."
+    ):
         _validacion_inputs(ObjetoRoto(), [1, 2, 3])
 
 
@@ -60,6 +72,7 @@ def test_error_dimensiones_invalidas_array_1():
     with pytest.raises(ValueError, match="Los inputs deben ser vectores 1D"):
         _validacion_inputs(np.ones((2, 2)), [1, 2])
 
+
 def test_error_dimensiones_invalidas_array_2():
     """
     Test dimensiones inválidas en array 2
@@ -67,7 +80,7 @@ def test_error_dimensiones_invalidas_array_2():
     :date: 23/03/2026
     """
     with pytest.raises(ValueError, match="Los inputs deben ser vectores 1D"):
-        _validacion_inputs([1, 2],np.ones((2, 2)) )
+        _validacion_inputs([1, 2], np.ones((2, 2)))
 
 
 def test_error_distinto_largo():

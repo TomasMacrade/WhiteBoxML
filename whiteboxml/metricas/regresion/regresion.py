@@ -11,6 +11,9 @@ Incluye:
 - Mean Squared Error (MSE)
 - Mean Absolute Error (MAE)
 - Coeficiente de determinación (R^2)
+
+:authors: Tomás Macrade
+:date: 27/02/2026
 """
 
 import numpy as np

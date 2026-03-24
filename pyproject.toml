@@ -34,7 +34,7 @@ select = ["E", "F", "I"]
 ignore = []
 
 [tool.ruff.lint.pydocstyle]
-convention = "sphinx"
+convention = "pep257"
 
 [tool.pytest.ini_options]
 addopts = "-q"

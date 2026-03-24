@@ -1,5 +1,8 @@
 """
 Metricas: Conjunto de métricas útiles para clasificación y regresión 
+
+:authors: Tomás Macrade
+:date: 27/02/2026
 """
 
 from .clasificacion import accuracy, precision, recall
