@@ -41,7 +41,7 @@ def _validacion_inputs(
 
     if array2.ndim == 2 and 1 in array2.shape:
         array2 = array2.reshape(-1)
-    elif array1.ndim != 1:
+    elif array2.ndim != 1:
         raise ValueError("Los inputs deben ser vectores 1D o matrices columna/fila.")
 
     if array1.shape != array2.shape:

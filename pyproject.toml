@@ -33,6 +33,9 @@ line-length = 88
 select = ["E", "F", "I"]
 ignore = []
 
+[tool.ruff.lint.pydocstyle]
+convention = "sphinx"
+
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]

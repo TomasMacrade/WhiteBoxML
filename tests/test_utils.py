@@ -23,6 +23,21 @@ def test_conversion_exitosa():
     assert a1.shape == (3,)
     assert np.array_equal(a1, [1, 2, 3])
 
+def test_exception_conversion_array():
+    """
+    Test exception en conversión array
+    :authors: Tomás Macrade
+    :date: 24/03/2026
+    """
+    class ObjetoRoto:
+        def __len__(self):
+            return 10
+        def __getitem__(self):
+            raise RuntimeError("Fallo forzado")
+
+    with pytest.raises(ValueError, match="Los inputs deben ser convertibles a arrays de NumPy."):
+        _validacion_inputs(ObjetoRoto(), [1, 2, 3])
+
 
 def test_reshape_columna_fila():
     """
@@ -31,19 +46,28 @@ def test_reshape_columna_fila():
     :date: 23/03/2026
     """
     a1 = np.array([[1], [2], [3]])
-    a2 = np.array([4, 5, 6])
+    a2 = np.array([[4], [5], [6]])
     r1, _ = _validacion_inputs(a1, a2)
     assert r1.ndim == 1
 
 
-def test_error_dimensiones_invalidas():
+def test_error_dimensiones_invalidas_array_1():
     """
-    Test dimensiones inválidas
+    Test dimensiones inválidas en array 1
     :authors: Tomás Macrade
     :date: 23/03/2026
     """
     with pytest.raises(ValueError, match="Los inputs deben ser vectores 1D"):
         _validacion_inputs(np.ones((2, 2)), [1, 2])
+
+def test_error_dimensiones_invalidas_array_2():
+    """
+    Test dimensiones inválidas en array 2
+    :authors: Tomás Macrade
+    :date: 23/03/2026
+    """
+    with pytest.raises(ValueError, match="Los inputs deben ser vectores 1D"):
+        _validacion_inputs([1, 2],np.ones((2, 2)) )
 
 
 def test_error_distinto_largo():
@@ -106,5 +130,5 @@ def test_calculo_basico_tp_fp_fn():
 
     res = _compute_metric_components(y_true, y_pred, classes, ["TP", "FP", "FN"])
 
-    assert np.array_equal(res[1], [1, 1, 1])
     assert np.array_equal(res[0], [1, 1, 1])
+    assert np.array_equal(res[1], [1, 1, 1])

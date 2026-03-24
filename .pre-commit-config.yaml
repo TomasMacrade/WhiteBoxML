@@ -44,3 +44,12 @@ repos:
         language: system
         types: [python]
         args: ["--max-line-length=100"]
+
+  - repo: local
+    hooks:
+      - id: check-custom-docstrings
+        name: Validar formato de autores y fecha
+        entry: python scripts/check_docstrings.py
+        language: python
+        types: [python]
+        files: ^whiteboxml/
