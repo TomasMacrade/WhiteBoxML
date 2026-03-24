@@ -113,7 +113,7 @@ def _compute_metric_components(
                 counter = np.sum((y_pred == cls) & (y_true == cls))
             elif m == "FP":
                 counter = np.sum((y_pred == cls) & (y_true != cls))
-            elif m == "FN":
+            else:
                 counter = np.sum((y_pred != cls) & (y_true == cls))
             metric_list.append(counter)
         counts.append(metric_list)
