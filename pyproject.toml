@@ -16,9 +16,11 @@ pre-commit = "^3.3.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
+pytest-cov = "^4.1.0"
 pre-commit = "^3.0"
 ruff = "^0.3"
 jupyter = "^1.0"
+pylint = "^4.0.5"
 
 [build-system]
 requires = ["poetry-core>=1.8.0"]
@@ -31,9 +33,30 @@ line-length = 88
 select = ["E", "F", "I"]
 ignore = []
 
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
+python_files = "test_*.py"
 
 [tool.poetry.scripts]
 install-hooks = "pre_commit:main"
+
+
+[tool.coverage.run]
+source = ["whiteboxml"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:"
+]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+targets = ["whiteboxml"]

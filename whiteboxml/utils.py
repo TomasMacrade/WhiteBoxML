@@ -7,6 +7,9 @@ a arrays de NumPy y verificación de consistencia dimensional).
 
 Estas funciones son utilizadas por las métricas públicas del
 paquete y no forman parte de la API expuesta al usuario.
+
+:authors: Tomás Macrade
+:date: 27/02/2026
 """
 
 from typing import Literal
@@ -34,13 +37,15 @@ def _validacion_inputs(
     except Exception as e:
         raise ValueError("Los inputs deben ser convertibles a arrays de NumPy.") from e
 
-    for array in (array1, array2):
-        if array.ndim == 2 and 1 in array.shape:
-            array = array.reshape(-1)
-        elif array.ndim != 1:
-            raise ValueError(
-                "Los inputs deben ser vectores 1D o matrices columna/fila."
-            )
+    if array1.ndim == 2 and 1 in array1.shape:
+        array1 = array1.reshape(-1)
+    elif array1.ndim != 1:
+        raise ValueError("Los inputs deben ser vectores 1D o matrices columna/fila.")
+
+    if array2.ndim == 2 and 1 in array2.shape:
+        array2 = array2.reshape(-1)
+    elif array2.ndim != 1:
+        raise ValueError("Los inputs deben ser vectores 1D o matrices columna/fila.")
 
     if array1.shape != array2.shape:
         raise ValueError(
@@ -59,7 +64,7 @@ def _validacion_average(average: str | None) -> str | None:
 
     :param average: parámetro average
     :authors: Tomás Macrade
-    :date: 29/02/2026
+    :date: 28/02/2026
     """
     if average is None:
         return None
@@ -93,19 +98,22 @@ def _compute_metric_components(
     :param classes: array de clases a considerar
     :param metrics: lista de métricas a calcular
     :return: métricas calculadas en el órden que fueron requeridas en metrics por clase
+    :authors: Tomás Macrade
+    :date: 28/02/2026
     """
-
-    classes = np.unique(np.concatenate((y_true, y_pred)))
 
     counts = []
     for cls in classes:
         metric_list = []
         for m in metrics:
+
+            counter: int = 0
+
             if m == "TP":
                 counter = np.sum((y_pred == cls) & (y_true == cls))
             elif m == "FP":
                 counter = np.sum((y_pred == cls) & (y_true != cls))
-            elif m == "FN":
+            else:
                 counter = np.sum((y_pred != cls) & (y_true == cls))
             metric_list.append(counter)
         counts.append(metric_list)

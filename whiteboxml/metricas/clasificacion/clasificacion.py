@@ -11,6 +11,9 @@ Incluye:
 - Accuracy
 - Precision
 - Recall
+
+:authors: Tomás Macrade
+:date: 28/02/2026
 """
 
 from typing import Any
@@ -37,8 +40,7 @@ def accuracy(y_true: ArrayLike, y_pred: ArrayLike) -> float:
     """
 
     vector_true, vector_pred = _validacion_inputs(y_true, y_pred)
-    accuracy = np.mean(vector_true == vector_pred)
-    return float(accuracy)
+    return float(np.mean(vector_true == vector_pred))
 
 
 def precision(
@@ -65,7 +67,7 @@ def precision(
     average = _validacion_average(average)
     vector_true, vector_pred = _validacion_inputs(y_true, y_pred)
 
-    classes = np.unique(np.concatenate((vector_true, vector_pred)))
+    classes = np.unique(vector_true)
 
     if average == "binary":
         tp = np.sum((vector_pred == pos_label) & (vector_true == pos_label))
@@ -96,23 +98,17 @@ def precision(
 
         supports = np.array([np.sum(vector_true == c) for c in classes])
         total_support = np.sum(supports)
-        if total_support == 0:
-            return 0.0
         weights = supports / total_support
 
         return float(np.sum(per_class_precision * weights))
 
-    if average is None:
-        components = _compute_metric_components(
-            vector_true, vector_pred, classes, ["TP", "FP"]
-        )
-        tp, fp = components[:, 0], components[:, 1]
-        with np.errstate(divide="ignore", invalid="ignore"):
-            per_class_precision = np.nan_to_num(tp / (tp + fp))
-        return per_class_precision
-
-    else:
-        raise ValueError("Invalid average")
+    components = _compute_metric_components(
+        vector_true, vector_pred, classes, ["TP", "FP"]
+    )
+    tp, fp = components[:, 0], components[:, 1]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        per_class_precision = np.nan_to_num(tp / (tp + fp))
+    return per_class_precision
 
 
 def recall(
@@ -137,7 +133,7 @@ def recall(
     average = _validacion_average(average)
     vector_true, vector_pred = _validacion_inputs(y_true, y_pred)
 
-    classes = np.unique(np.concatenate((vector_true, vector_pred)))
+    classes = np.unique(vector_true)
 
     if average == "binary":
         tp = np.sum((vector_pred == pos_label) & (vector_true == pos_label))
@@ -168,20 +164,14 @@ def recall(
 
         supports = np.array([np.sum(vector_true == c) for c in classes])
         total_support = np.sum(supports)
-        if total_support == 0:
-            return 0.0
         weights = supports / total_support
 
         return float(np.sum(per_class_recall * weights))
 
-    if average is None:
-        components = _compute_metric_components(
-            vector_true, vector_pred, classes, ["TP", "FN"]
-        )
-        tp, fn = components[:, 0], components[:, 1]
-        with np.errstate(divide="ignore", invalid="ignore"):
-            per_class_recall = np.nan_to_num(tp / (tp + fn))
-        return per_class_recall
-
-    else:
-        raise ValueError("Invalid average")
+    components = _compute_metric_components(
+        vector_true, vector_pred, classes, ["TP", "FN"]
+    )
+    tp, fn = components[:, 0], components[:, 1]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        per_class_recall = np.nan_to_num(tp / (tp + fn))
+    return per_class_recall

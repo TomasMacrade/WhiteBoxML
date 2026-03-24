@@ -11,6 +11,9 @@ Incluye:
 - Mean Squared Error (MSE)
 - Mean Absolute Error (MAE)
 - Coeficiente de determinación (R^2)
+
+:authors: Tomás Macrade
+:date: 27/02/2026
 """
 
 import numpy as np
@@ -73,5 +76,5 @@ def r2(y_true: ArrayLike, y_pred: ArrayLike) -> float:
             "El coeficiente de determinación no está definido "
             "cuando la varianza de y_true es cero."
         )
-    r2 = 1 - mse / var
-    return float(r2)
+    coef = 1 - mse / var
+    return float(coef)
