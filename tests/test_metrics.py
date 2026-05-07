@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from whiteboxml import metricas
+from whiteboxml.metricas.clasificacion import auc_roc
 
 
 def test_accuracy_perfect():
@@ -184,3 +185,75 @@ def test_r2_raises_on_zero_variance():
     y_pred = [1.0, 1.0, 1.0]
     with pytest.raises(ValueError):
         metricas.r2(y_true, y_pred)
+
+
+def test_auc_perfecto():
+    """
+    Test auc perfecto
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+
+    """
+    y_true = [0, 0, 1, 1]
+    scores = [0.1, 0.2, 0.8, 0.9]
+
+    res = auc_roc(y_true, scores, show_plot=False)
+
+    assert res["AUC"] == pytest.approx(1.0)
+    assert 0.2 < res["Mejor Umbral"] <= 0.8
+
+
+def test_auc_aleatorio():
+    """
+    Test_auc_aleatorio
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+    """
+    y_true = [0, 1, 0, 1]
+    scores = [0.5, 0.5, 0.5, 0.5]
+
+    res = auc_roc(y_true, scores, show_plot=False)
+
+    assert res["AUC"] == pytest.approx(0.5)
+
+
+def test_error_dimensiones():
+    """
+    Test error de dimensión
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+    """
+    with pytest.raises(ValueError):
+        auc_roc([0, 1], [0.5], show_plot=False)
+
+
+def test_estructura_diccionario():
+    """
+    Test estructura del diccionario
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+    """
+    y_true = [0, 1]
+    scores = [0.2, 0.8]
+    res = auc_roc(y_true, scores, show_plot=False)
+
+    llaves_esperadas = {"TVP", "TFP", "AUC", "Mejor Umbral"}
+    assert llaves_esperadas.issubset(res.keys())
+
+
+def test_mejor_umbral_logica():
+    """
+    Test mejor umbral
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+    """
+    y_true = [0, 0, 1, 1]
+    scores = [0.1, 0.3, 0.6, 0.9]
+    res = auc_roc(y_true, scores, show_plot=False)
+
+    assert 0.0 <= res["Mejor Umbral"] <= 1.0

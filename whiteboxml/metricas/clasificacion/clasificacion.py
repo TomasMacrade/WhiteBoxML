@@ -16,10 +16,13 @@ Incluye:
 :date: 28/02/2026
 """
 
-from typing import Any
+from typing import Any, Dict, Union
 
 import numpy as np
 from numpy.typing import ArrayLike
+
+import matplotlib.pyplot as plt
+
 
 from whiteboxml.utils import (
     _compute_metric_components,
@@ -175,3 +178,114 @@ def recall(
     with np.errstate(divide="ignore", invalid="ignore"):
         per_class_recall = np.nan_to_num(tp / (tp + fn))
     return per_class_recall
+
+
+def auc_roc(
+    y_true: ArrayLike, scores: ArrayLike, thresholds: int = 50, show_plot: bool = True
+) -> Dict[str, Union[np.ndarray, float]]:
+    """
+
+    Cálculo del AUC ROC y optimización del umbral
+
+    Calcula la curva ROC barriendo una serie de umbrales y determina el mejor punto de corte.
+    También genera una visualización de la curva.
+
+
+    :param y_true: targets de clase (0 o 1).
+    :type y_true: ArrayLike
+    :param scores: probabilidad de scores o probabilidades asignados por el modelo.
+    :type scores: ArrayLike
+    :param thresholds: número de umbrales a evaluar, por defecto 50.
+    :type thresholds: int
+    :param show_plot: Generar visualización de la AUC ROC.
+    :type: bool
+    :return: Diccionario con TVP, TFP (arrays), valor AUC y mejor_umbral (floats).
+    :rtype: Dict[str, Union[np.ndarray, float]]
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+    """
+    _validacion_inputs(y_true, scores)
+
+    y_true = np.asarray(y_true)
+    scores = np.asarray(scores)
+
+    positivos: np.ndarray = y_true == 1
+    negativos: np.ndarray = y_true == 0
+
+    n_positivos: int = int(np.sum(positivos))
+    n_negativos: int = int(np.sum(negativos))
+
+    umbrales = np.linspace(1, 0, thresholds).reshape(-1, 1)
+
+    predicciones = scores >= umbrales
+
+    vps = np.sum(predicciones[:, positivos], axis=1)
+    fps = np.sum(predicciones[:, negativos], axis=1)
+
+    tvp = vps / n_positivos if n_positivos > 0 else np.zeros(thresholds)
+    tfp = fps / n_negativos if n_negativos > 0 else np.zeros(thresholds)
+
+    distancia = np.sqrt((1.0 - tvp) ** 2 + (tfp) ** 2)
+
+    idx = np.argmin(distancia)
+
+    mejor_umbral = float(umbrales[idx].item())
+
+    try:
+        auc = float(np.abs(np.trapezoid(tvp, tfp)))
+    except ImportError:
+        auc = float(np.abs(np.trapz(tvp, tfp)))
+
+    if show_plot:
+        plot_roc_curve(tfp, tvp, auc, mejor_umbral, idx)
+
+    return {"TVP": tvp, "TFP": tfp, "AUC": auc, "Mejor Umbral": mejor_umbral}
+
+
+def plot_roc_curve(
+    tfp: np.ndarray, tvp: np.ndarray, auc: float, mejor_umbral: float, idx_optimo: int
+) -> None:
+    """
+
+    Genera la visualización de la curva AUC ROC.
+
+    :param tfp: Array con la tasa de falsos positivos.
+    :type tfp: np.ndarray
+    :param tvp: Array con la tasa de verdaderos positivos.
+    :type tvp: np.ndarray
+    :param auc: Valor del área bajo la curva calculado.
+    :type auc: float
+    :param mejor_umbral: Valor del umbral óptimo identificado.
+    :type mejor_umbral: float
+    :param idx_optimo: Índice del punto óptimo en los arrays.
+    :type idx_optimo: int
+    :return: None
+    :rtype: None
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+
+    """
+    _, ax = plt.subplots(figsize=(6, 6))
+
+    ax.plot(tfp, tvp, label=f"AUC = {auc:.4f}", color="tab:blue", lw=2)
+    ax.plot([0, 1], [0, 1], "r--", label="Azar (AUC = 0.5)")
+
+    ax.set_xlabel("Tasa de falsos positivos (TFP)")
+    ax.set_ylabel("Tasa de verdaderos positivos (TVP)")
+    ax.set_title("Curva AUC ROC")
+
+    ax.fill_between(tfp, tvp, alpha=0.3, color="tab:blue")
+    ax.scatter(
+        tfp[idx_optimo],
+        tvp[idx_optimo],
+        color="green",
+        s=66,
+        zorder=5,
+        label=f"Umbral Óptimo: {mejor_umbral:.2f}",
+    )
+
+    ax.legend(loc="lower right")
+    ax.grid(True, linestyle="--", alpha=0.6)
+    plt.show()
