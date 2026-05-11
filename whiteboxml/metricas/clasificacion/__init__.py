@@ -5,6 +5,6 @@ Clasificación: Conjunto de métricas para clasificación
 :date: 27/02/2026
 """
 
-from .clasificacion import accuracy, precision, recall
+from .clasificacion import accuracy, f1_score, precision, recall
 
-__all__ = ["accuracy", "precision", "recall"]
+__all__ = ["accuracy", "precision", "recall", "f1_score"]

@@ -11,6 +11,7 @@ Incluye:
 - Accuracy
 - Precision
 - Recall
+- F1 Score
 
 :authors: Tomás Macrade
 :date: 28/02/2026
@@ -175,3 +176,57 @@ def recall(
     with np.errstate(divide="ignore", invalid="ignore"):
         per_class_recall = np.nan_to_num(tp / (tp + fn))
     return per_class_recall
+
+
+def f1_score(
+    y_true: ArrayLike,
+    y_pred: ArrayLike,
+    average: str | None = "binary",
+    pos_label: Any = 1,
+) -> float | np.ndarray:
+    """
+    Cálculo del F1 score.
+
+    :param y_true: targets reales
+    :param y_pred: targets predichos
+    :param average: define el tipo de average en
+    clasificación multiclase ("binary","micro", "macro", "weighted", None)
+    :param pos_label: valor a considerar como positivo
+    en el caso de targets binarios. Ignorado si average != "binary".
+    :return: score de F1 o array con el F1 por clase en caso de average = None
+    :authors: Nahuel Nicolas Alvarez
+    :date: 21/04/2026
+    """
+
+    average = _validacion_average(average)
+    vector_true, vector_pred = _validacion_inputs(y_true, y_pred)
+
+    if average == "binary":
+        tp = np.sum((vector_pred == pos_label) & (vector_true == pos_label))
+        fp = np.sum((vector_pred == pos_label) & (vector_true != pos_label))
+        fn = np.sum((vector_pred != pos_label) & (vector_true == pos_label))
+        den = 2 * tp + fp + fn
+        return float((2 * tp) / den) if den > 0 else 0.0
+
+    if average == "micro":
+        return (
+            float(np.mean(vector_true == vector_pred)) if vector_true.size > 0 else 0.0
+        )
+
+    classes = np.unique(vector_true)
+
+    components = _compute_metric_components(
+        vector_true, vector_pred, classes, ["TP", "FP", "FN"]
+    )
+    tp, fp, fn = components[:, 0], components[:, 1], components[:, 2]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        per_class_f1 = np.nan_to_num((2 * tp) / (2 * tp + fp + fn))
+
+    if average == "macro":
+        return float(np.mean(per_class_f1))
+
+    if average == "weighted":
+        supports = np.array([np.sum(vector_true == c) for c in classes], dtype=float)
+        return float(np.sum(per_class_f1 * (supports / supports.sum())))
+
+    return per_class_f1
