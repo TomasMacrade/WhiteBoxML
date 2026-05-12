@@ -1,4 +1,14 @@
+"""
+Módulo de model_selection.
+
+:authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+:date: 07/05/2026
+"""
+
+# pylint: disable=invalid-name, missing-module-docstring
+
 from __future__ import annotations
+
 import numpy as np
 
 
@@ -6,7 +16,7 @@ def train_test_split(
     X: np.ndarray,
     y: np.ndarray,
     test_size: float = 0.2,
-    random_state: int | None = None
+    random_state: int | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Divide un dataset en conjuntos de entrenamiento y test.

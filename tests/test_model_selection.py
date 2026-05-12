@@ -1,5 +1,17 @@
+"""
+Módulo de test para model_selection.
+
+:authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+:date: 07/05/2026
+"""
+
+# pylint: disable=invalid-name, missing-module-docstring
+
+
 from __future__ import annotations
+
 import numpy as np
+
 from whiteboxml.model_selection import train_test_split
 
 

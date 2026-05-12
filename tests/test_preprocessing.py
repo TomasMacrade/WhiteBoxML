@@ -1,6 +1,23 @@
+"""
+Módulo de test para preprocessing.
+
+:authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+:date: 07/05/2026
+"""
+
+# pylint: disable=invalid-name, missing-module-docstring
+
+
 from __future__ import annotations
+
 import numpy as np
-from whiteboxml.preprocessing import StandardScaler, MinMaxScaler, LabelEncoder, OneHotEncoder
+
+from whiteboxml.preprocessing import (
+    LabelEncoder,
+    MinMaxScaler,
+    OneHotEncoder,
+    StandardScaler,
+)
 
 
 def test_standard_scaler() -> None:

@@ -1,13 +1,33 @@
+"""
+Módulo de preprocessing.
+
+:authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+:date: 07/05/2026
+"""
+
+# pylint: disable=invalid-name, missing-module-docstring
+
+
 from __future__ import annotations
+
 import numpy as np
 
 
 class StandardScaler:
     """
     Escala los datos usando normalización Z-score.
+    :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+    :date: 07/05/2026
     """
 
     def __init__(self) -> None:
+        """
+        Inicializa el scaler.
+
+        :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+        :date: 07/05/2026
+        """
+
         self.mean_: np.ndarray | None = None
         self.std_: np.ndarray | None = None
 
@@ -19,7 +39,7 @@ class StandardScaler:
         :type X: np.ndarray
         :return: Instancia del scaler entrenado.
         :rtype: StandardScaler
-        :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda, Matias Moreyra,  Santiago Pastori, Franco Aranda
+        :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
         :date: 07/05/2026
         """
 
@@ -65,12 +85,21 @@ class StandardScaler:
 
         return self.fit(X).transform(X)
 
+
 class MinMaxScaler:
     """
     Escala los datos al rango [0, 1].
+    :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+    :date: 07/05/2026
     """
 
     def __init__(self) -> None:
+        """
+        Inicializa el scaler.
+
+        :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+        :date: 07/05/2026
+        """
         self.min_: np.ndarray | None = None
         self.max_: np.ndarray | None = None
 
@@ -114,6 +143,7 @@ class MinMaxScaler:
         range_[range_ == 0] = 1
 
         return (X - self.min_) / range_
+
     def fit_transform(self, X: np.ndarray) -> np.ndarray:
         """
         Ajusta y transforma los datos.
@@ -128,14 +158,24 @@ class MinMaxScaler:
 
         return self.fit(X).transform(X)
 
-#-------------------------------#
+
+# -------------------------------#
+
 
 class LabelEncoder:
     """
     Codifica etiquetas categóricas como enteros.
+    :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+    :date: 07/05/2026
     """
 
     def __init__(self) -> None:
+        """
+        Inicializa el encoder.
+
+        :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+        :date: 07/05/2026
+        """
         self.classes_: dict | None = None
 
     def fit(self, y: np.ndarray) -> LabelEncoder:
@@ -175,7 +215,7 @@ class LabelEncoder:
         y = np.array(y)
 
         return np.array([self.classes_[label] for label in y])
-    
+
     def fit_transform(self, X: np.ndarray) -> np.ndarray:
         """
         Ajusta y transforma los datos.
@@ -194,9 +234,17 @@ class LabelEncoder:
 class OneHotEncoder:
     """
     Codifica variables categóricas en formato one-hot.
+    :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+    :date: 07/05/2026
     """
 
     def __init__(self) -> None:
+        """
+        Inicializa el encoder.
+
+        :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
+        :date: 07/05/2026
+        """
         self.categories_: np.ndarray | None = None
         self.mapping_: dict | None = None
 
@@ -227,7 +275,7 @@ class OneHotEncoder:
         :type y: np.ndarray
         :return: Matriz one-hot.
         :rtype: np.ndarray
-        :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda, Matias Moreyra,  Santiago Pastori, Franco Aranda
+        :authors: Lucas Capocasa, Matias Moreyra,  Santiago Pastori, Franco Aranda
         :date: 07/05/2026
         """
 
@@ -243,7 +291,7 @@ class OneHotEncoder:
             one_hot[i, idx] = 1
 
         return one_hot
-    
+
     def fit_transform(self, X: np.ndarray) -> np.ndarray:
         """
         Ajusta y transforma los datos.
