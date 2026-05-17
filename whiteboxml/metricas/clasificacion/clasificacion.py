@@ -175,3 +175,54 @@ def recall(
     with np.errstate(divide="ignore", invalid="ignore"):
         per_class_recall = np.nan_to_num(tp / (tp + fn))
     return per_class_recall
+
+
+def entropia_cruzada(
+    y_true: ArrayLike,
+    y_pred: ArrayLike,
+) -> float:
+    """
+    Calcula la entropía cruzada para clasificación binaria y multiclase, 
+    La función detecta automáticamente si el caso es binario o multiclase.
+    :param y_true: etiquetas reales, pueden recibirse vectores o matrices
+    :param y_pred: probabilidades predichas por el modelo, pueden recibirse vectores o matrices
+    :return: valor promedio de la función de costo
+    :authors: Camila Gonzalez, Luciana Parallela
+    :date: 16/5/2026
+    """
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+
+    #En caso de que las probabilidades predichas no estén entre  0 y 1, se lanza un error. 
+    if np.any(y_pred < 0) or np.any(y_pred > 1): 
+        raise ValueError(
+            
+        )
+    # Caso MULTINOMIAL
+
+    if y_pred.ndim == 2:       
+
+    #Verificamos que la suma de las probabilidades predichas sea aproximadamente 1 en cada fila. 
+        suma_filas = np.sum(y_pred, axis=1)  
+
+        if not np.allclose(suma_filas, 1):
+            raise ValueError(
+                "La suma de las probabilidades debe ser aprox. 1 en cada fila"  
+            )
+
+        n_samples = y_pred.shape[0]
+        n_classes = y_pred.shape[1]
+
+        if y_true.ndim == 1: 
+            y_true = np.eye(n_classes)[y_true]
+
+        loss = -np.sum( y_true * np.log(y_pred)) / n_samples
+
+        return loss
+    
+    #En caso de que sea binario:
+    else:
+
+        loss = -np.mean( y_true * np.log(y_pred) +  (1 - y_true) * np.log(1 - y_pred))
+
+        return loss
