@@ -5,7 +5,7 @@ Metricas: Conjunto de métricas útiles para clasificación y regresión
 :date: 27/02/2026
 """
 
-from .clasificacion import accuracy, precision, recall
+from .clasificacion import accuracy, precision, recall, entropia_cruzada
 from .regresion import mean_absolute_error, mean_squared_error, r2
 
 __all__ = [
@@ -15,4 +15,5 @@ __all__ = [
     "mean_absolute_error",
     "mean_squared_error",
     "r2",
+    "entropia_cruzada"
 ]

@@ -184,3 +184,51 @@ def test_r2_raises_on_zero_variance():
     y_pred = [1.0, 1.0, 1.0]
     with pytest.raises(ValueError):
         metricas.r2(y_true, y_pred)
+
+
+def test_entropia_cruzada_binaria():
+    """
+    Test entropía cruzada para clasificación binaria
+    :authors: Luciana Parallela, Camila Gonzalez
+    :date: 17/05/2026
+    """
+    y_true = [1, 0, 1]
+    y_pred = [0.9, 0.2, 0.8]
+
+    expected = -np.mean(
+        np.array(y_true) * np.log(np.array(y_pred)) +
+        (1 - np.array(y_true)) * np.log(1 - np.array(y_pred))
+    )
+
+    assert metricas.entropia_cruzada(y_true, y_pred) == pytest.approx(expected) #Verificar automaticamente que el resultado sea el esperado 
+
+
+def test_entropia_cruzada_multiclase():
+    """
+    Test entropía cruzada para clasificación multiclase
+    :authors: Luciana Parallela, Camila Gonzalez
+    :date: 17/05/2026
+    """
+    y_true = [0, 2, 1]
+    y_pred = [
+        [0.8, 0.1, 0.1],
+        [0.2, 0.1, 0.7],
+        [0.05, 0.9, 0.05],
+    ]
+
+    expected = -np.mean([np.log(0.8), np.log(0.7), np.log(0.9)])
+
+    assert metricas.entropia_cruzada(y_true, y_pred) == pytest.approx(expected)
+
+
+def test_entropia_cruzada_probabilidades_invalidas():
+    """
+    Test entropía cruzada para probabilidades invalidas
+    :authors: Luciana Parallela, Camila Gonzalez
+    :date: 17/05/2026
+    """
+    y_true = [1, 0]
+    y_pred = [1.2, -0.1]
+
+    with pytest.raises(ValueError):
+        metricas.entropia_cruzada(y_true, y_pred)
