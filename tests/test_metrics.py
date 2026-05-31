@@ -246,3 +246,159 @@ def test_r2_raises_on_zero_variance():
     y_pred = [1.0, 1.0, 1.0]
     with pytest.raises(ValueError):
         metricas.r2(y_true, y_pred)
+
+
+def test_auc_perfecto():
+    """
+    Test auc perfecto
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+
+    """
+    y_true = [0, 0, 1, 1]
+    scores = [0.1, 0.2, 0.8, 0.9]
+
+    res = metricas.auc_roc(y_true, scores, show_plot=False)
+
+    assert res["AUC"] == pytest.approx(1.0)
+    assert 0.2 < res["Mejor Umbral"] <= 0.8
+
+
+def test_auc_aleatorio():
+    """
+    Test_auc_aleatorio
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+    """
+    y_true = [0, 1, 0, 1]
+    scores = [0.5, 0.5, 0.5, 0.5]
+
+    res = metricas.auc_roc(y_true, scores, show_plot=False)
+
+    assert res["AUC"] == pytest.approx(0.5)
+
+
+def test_error_dimensiones():
+    """
+    Test error de dimensión
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+    """
+    with pytest.raises(ValueError):
+        metricas.auc_roc([0, 1], [0.5], show_plot=False)
+
+
+def test_estructura_diccionario():
+    """
+    Test estructura del diccionario
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+    """
+    y_true = [0, 1]
+    scores = [0.2, 0.8]
+    res = metricas.auc_roc(y_true, scores, show_plot=False)
+
+    llaves_esperadas = {"TVP", "TFP", "AUC", "Mejor Umbral"}
+    assert llaves_esperadas.issubset(res.keys())
+
+
+def test_mejor_umbral_logica():
+    """
+    Test mejor umbral
+    :authors: Emiliano David Santis
+    :date: 4/05/2026
+
+    """
+    y_true = [0, 0, 1, 1]
+    scores = [0.1, 0.3, 0.6, 0.9]
+    res = metricas.auc_roc(y_true, scores, show_plot=False)
+
+    assert 0.0 <= res["Mejor Umbral"] <= 1.0
+
+
+def test_auc_pr_perfecto():
+    """
+    Test auc pr con un clasificador perfecto
+
+    :authors: Emiliano David Santis
+    :date: 14/05/2026
+    """
+    y_true = [0, 0, 1, 1]
+    scores = [0.1, 0.2, 0.8, 0.9]
+
+    res = metricas.auc_pr(y_true, scores, show_plot=False)
+
+    assert res["AUC_PR"] == pytest.approx(1.0)
+
+    assert 0.2 < res["Mejor Umbral (F1)"] <= 0.8
+
+
+def test_auc_pr_estructura_diccionario():
+    """
+    Test las llaves y tipos devueltos por el diccionario de salida
+
+    :authors: Emiliano David Santis
+    :date: 14/05/2026
+    """
+    y_true = [0, 1]
+    scores = [0.3, 0.7]
+    res = metricas.auc_pr(y_true, scores, show_plot=False)
+
+    llaves_esperadas = {"Precision", "Recall", "AUC_PR", "Mejor Umbral (F1)"}
+
+    assert llaves_esperadas.issubset(res.keys())
+
+    assert isinstance(res["Precision"], np.ndarray)
+    assert isinstance(res["Recall"], np.ndarray)
+    assert isinstance(res["AUC_PR"], float)
+    assert isinstance(res["Mejor Umbral (F1)"], float)
+
+
+def test_auc_pr_sin_positivos():
+    """Test de estabilidad cuando el dataset no contiene la clase positiva (1)
+
+    Garantiza que la división por cero devuelva un comportamiento controlado.
+
+    :authors: Emiliano David Santis
+    :date: 14/05/2026
+    """
+    y_true = [0, 0, 0, 0]
+    scores = [0.2, 0.4, 0.1, 0.5]
+
+    res = metricas.auc_pr(y_true, scores, show_plot=False)
+
+    assert res["AUC_PR"] == pytest.approx(0.0)
+    assert np.all(res["Recall"] == 0.0)
+
+
+def test_auc_pr_error_dimensiones():
+    """Test que levanta ValueError si las dimensiones de inputs difieren
+
+    :authors: Emiliano David Santis
+    :date: 14/05/2026
+    """
+    y_true = [0, 1, 1]
+    scores = [0.2, 0.8]  # Falta un score
+
+    with pytest.raises(ValueError):
+        metricas.auc_pr(y_true, scores, show_plot=False)
+
+
+def test_auc_pr_thresholds_param():
+    """Test que comprueba que el número de umbrales modifique el tamaño de los arrays
+
+    :authors: Emiliano David Santis
+    :date: 14/05/2026
+    """
+    y_true = [0, 0, 1, 1]
+    scores = [0.1, 0.4, 0.6, 0.9]
+    N = 20
+
+    res = metricas.auc_pr(y_true, scores, thresholds=N, show_plot=False)
+
+    assert len(res["Precision"]) == N
+    assert len(res["Recall"]) == N
