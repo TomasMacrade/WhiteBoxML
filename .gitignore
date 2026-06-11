@@ -14,9 +14,13 @@ ENV/
 htmlcov/
 *cache*
 
-
 # OS
 .DS_Store
+
+# IDEs
 .vscode/
+.vs/
 .idea/
+
+# Env
 .env
