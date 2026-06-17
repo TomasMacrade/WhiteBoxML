@@ -5,6 +5,6 @@ WhiteBoxML: Librería de machine learning
 :date: 27/02/2026
 """
 
-from whiteboxml import metricas
+from whiteboxml import metricas, modelos
 
-__all__ = ["metricas"]
+__all__ = ["metricas", "modelos"]
