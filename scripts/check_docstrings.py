@@ -22,6 +22,7 @@ def check_docstring(docstring, label, path, line_no):
     :param path: ruta del archivo
     :param line_no: número de línea donde comienza el elemento
     :return: lista de mensajes de error encontrados
+    
     :authors: Tomás Macrade
     :date: 24/03/2026
     """
