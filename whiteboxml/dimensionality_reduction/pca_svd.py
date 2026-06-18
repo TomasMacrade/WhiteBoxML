@@ -20,157 +20,156 @@ import matplotlib.pyplot as plt
 
 
 def _svd_from_scratch(
-    X_c: np.ndarray, 
-    tol: float = 1e-10, 
+    X_c: np.ndarray,
+    tol: float = 1e-10,
     max_iter: int = 500
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Compute SVD of a centered matrix using power iteration and deflation.
-    
-    Finds U, S, V such that X_c ≈ U @ diag(S) @ V^T by iteratively extracting
-    the dominant eigenvector of X_c^T X_c and deflating the matrix.
-    
-    :param X_c: Centered data matrix of shape (n_samples, n_features).
+    Calcula la SVD de una matriz centrada usando el método de las potencias y deflación.
+
+    Encuentra U, S, V tales que X_c ≈ U @ diag(S) @ V^T mediante la extracción iterativa
+    del autovector dominante de X_c^T X_c y la posterior deflación de la matriz.
+
+    :param X_c: Matriz de datos centrada de forma (n_samples, n_features).
     :type X_c: np.ndarray
-    :param tol: Convergence tolerance for eigenvector iteration.
+    :param tol: Tolerancia de convergencia para la iteración del autovector.
     :type tol: float
-    :param max_iter: Maximum iterations per component.
+    :param max_iter: Número máximo de iteraciones por componente.
     :type max_iter: int
-    :return: Tuple (U, S, V) where U ∈ ℝ^(n×k), S ∈ ℝ^k, V ∈ ℝ^(m×k).
+    :return: Tupla (U, S, V) donde U ∈ ℝ^(n×k), S ∈ ℝ^k, V ∈ ℝ^(m×k).
     :rtype: Tuple[np.ndarray, np.ndarray, np.ndarray]
-    
+
     :authors: Toledo, Calina, Canteros
     :date: 01/06/2026
-    
-    Notes
+
+    Notas
     -----
-    This implementation follows the mathematical equivalence:
-    eig(X_c^T X_c) → (λ_i, v_i) ⇒ σ_i = λ_i, u_i = X_c v_i / σ_i.
-    Deflation ensures orthogonality between successive components.
+    Esta implementación sigue la equivalencia matemática:
+    eig(X_c^T X_c) → (λ_i, v_i) ⇒ σ_i = √λ_i, u_i = X_c v_i / σ_i.
+    La deflación garantiza la ortogonalidad entre componentes sucesivos.
     """
     n, m = X_c.shape
     k_max = min(n, m)
-    
-    # Symmetric positive semi-definite matrix: C = X_c^T X_c
+
+    # Matriz simétrica semidefinida positiva: C = X_c^T X_c
     C = X_c.T @ X_c
-    
+
     U = np.zeros((n, k_max))
     V = np.zeros((m, k_max))
     S = np.zeros(k_max)
-    
+
     for i in range(k_max):
-        # 🔹 Power Iteration: find dominant eigenvector of C
+        # Método de las Potencias: encontrar el autovector dominante de C
         v = np.random.RandomState(i).randn(m)
         v = v / np.linalg.norm(v)
-        
+
         for _ in range(max_iter):
             v_new = C @ v
             norm_v = np.linalg.norm(v_new)
-            
-            if norm_v < tol:  # Zero eigenvalue reached
+
+            if norm_v < tol:  # Autovalor cero alcanzado
                 v_new = v
                 break
-                
+
             v_new = v_new / norm_v
             if np.linalg.norm(v_new - v) < tol:
                 v = v_new
                 break
             v = v_new
-        
-        # 🔹 Compute eigenvalue and singular value
+
+        # Calcular el autovalor y el valor singular
         lam = float(v @ (C @ v))
-        sigma = np.sqrt(max(lam, 0.0))  # Clamp numerical negatives
-        
+        sigma = np.sqrt(max(lam, 0.0))  # Forzar a cero si hay negativos numéricos
+
         if sigma < tol:
-            # Remaining components are numerically zero
+            # Los componentes restantes son numéricamente cero
             k_max = i
             break
-            
+
         S[i] = sigma
         V[:, i] = v
-        
-        # 🔹 Left singular vector: u_i = X_c v_i / σ_i
+
+        # Vector singular izquierdo: u_i = X_c v_i / σ_i
         U[:, i] = (X_c @ v) / sigma
-        
-        # 🔹 Deflation: remove found component from C
-        # C ← C - λ v v^T  (preserves symmetry)
+
+        # Deflación: eliminar el componente encontrado de C
+        # C ← C - λ v v^T  (preserva la simetría)
         C = C - lam * np.outer(v, v)
-    
-    # Trim to actual numerical rank and return V^T in the standard SVD format.
+
+    # Recortar al rango numérico real y devolver V^T en el formato estándar de SVD.
     return U[:, :k_max], S[:k_max], V[:, :k_max].T
 
 
 class PCAFromSVD:
     """
-    Principal Component Analysis via custom SVD implementation.
-    
-    Computes PCA by applying a from-scratch SVD to centered (and optionally
-    scaled) data, adhering strictly to the spectral decomposition of the
-    covariance matrix without relying on optimized linear algebra backends.
-    
-    :param n_components: Number of components to keep. If None, all components
-        are kept. If int, specifies the exact number. If float in (0,1), selects
-        the minimum number of components to retain at least that fraction of
-        total variance.
+    Análisis de Componentes Principales mediante una implementación propia de SVD.
+
+    Calcula PCA aplicando una SVD desde cero a los datos centrados (y opcionalmente
+    escalados), adhiriéndose estrictamente a la descomposición espectral de la
+    matriz de covarianza sin depender de librerías optimizadas de álgebra lineal.
+
+    :param n_components: Número de componentes a conservar. Si es None, se conservan todos.
+        Si es int, especifica el número exacto. Si es float en (0,1), selecciona el número
+        mínimo de componentes para retener al menos esa fracción de la varianza total.
     :type n_components: Optional[Union[int, float]]
-    :param scale: Whether to standardize features to zero mean and unit variance
-        before applying SVD. Recommended when features have different scales.
+    :param scale: Indica si se deben estandarizar las variables a media cero y varianza unitaria
+        antes de aplicar SVD. Recomendado cuando las variables tienen escalas diferentes.
     :type scale: bool
-    :param svd_tol: Convergence tolerance for the from-scratch SVD algorithm.
+    :param svd_tol: Tolerancia de convergencia para el algoritmo SVD desde cero.
     :type svd_tol: float
-    :param svd_max_iter: Maximum iterations per component in SVD power method.
+    :param svd_max_iter: Máximo de iteraciones por componente en el método de las potencias de SVD.
     :type svd_max_iter: int
-    
-    :ivar mean_: Mean of each feature computed during fit.
+
+    :ivar mean_: Media de cada variable calculada durante el fit.
     :vartype mean_: np.ndarray
-    :ivar std_: Standard deviation of each feature (only if scale=True).
+    :ivar std_: Desviación estándar de cada variable (solo si scale=True).
     :vartype std_: Optional[np.ndarray]
-    :ivar components_: Principal axes in feature space (right singular vectors).
+    :ivar components_: Ejes principales en el espacio de características (vectores singulares derechos).
     :vartype components_: np.ndarray
-    :ivar explained_variance_: Variance explained by each selected component.
+    :ivar explained_variance_: Varianza explicada por cada componente seleccionado.
     :vartype explained_variance_: np.ndarray
-    :ivar explained_variance_ratio_: Percentage of total variance explained.
+    :ivar explained_variance_ratio_: Porcentaje de varianza total explicada.
     :vartype explained_variance_ratio_: np.ndarray
-    :ivar singular_values_: Singular values from SVD decomposition.
+    :ivar singular_values_: Valores singulares obtenidos de la descomposición SVD.
     :vartype singular_values_: np.ndarray
-    :ivar n_components_: Actual number of components selected.
+    :ivar n_components_: Número real de componentes seleccionados.
     :vartype n_components_: int
-    
+
     :authors: Toledo, Calina, Canteros
     :date: 01/06/2026
-    
-    Example
+
+    Ejemplo
     -------
     >>> import numpy as np
     >>> X = np.random.randn(100, 5)
     >>> pca = PCAFromSVD(n_components=0.95, scale=True)
     >>> X_reduced = pca.fit_transform(X)
     """
-    
+
     def __init__(
-        self, 
-        n_components: Optional[Union[int, float]] = None, 
+        self,
+        n_components: Optional[Union[int, float]] = None,
         scale: bool = False,
         svd_tol: float = 1e-10,
         svd_max_iter: int = 500
     ) -> None:
         """
-        Initialize PCA model with specified parameters.
-        
-        :param n_components: Number of components to retain.
+        Inicializa el modelo PCA con los parámetros especificados.
+
+        :param n_components: Número de componentes a conservar.
         :type n_components: Optional[Union[int, float]]
-        :param scale: Whether to standardize features.
+        :param scale: Indica si se deben estandarizar las variables.
         :type scale: bool
-        :param svd_tol: Tolerance for SVD convergence.
+        :param svd_tol: Tolerancia para la convergencia de SVD.
         :type svd_tol: float
-        :param svd_max_iter: Max iterations for SVD power method.
+        :param svd_max_iter: Iteraciones máximas para el método de las potencias de SVD.
         :type svd_max_iter: int
         """
         self.n_components = n_components
         self.scale = scale
         self.svd_tol = svd_tol
         self.svd_max_iter = svd_max_iter
-        
+
         self.mean_: Optional[np.ndarray] = None
         self.std_: Optional[np.ndarray] = None
         self.components_: Optional[np.ndarray] = None
@@ -178,118 +177,118 @@ class PCAFromSVD:
         self.explained_variance_ratio_: Optional[np.ndarray] = None
         self.singular_values_: Optional[np.ndarray] = None
         self.n_components_: Optional[int] = None
-    
+
     def fit(self, X: np.ndarray) -> PCAFromSVD:
         """
-        Fit the PCA model by computing custom SVD of centered (and scaled) data.
-        
-        :param X: Training data matrix of shape (n_samples, n_features).
+        Entrena el modelo PCA calculando la SVD propia de los datos centrados (y escalados).
+
+        :param X: Matriz de datos de entrenamiento de forma (n_samples, n_features).
         :type X: np.ndarray
-        :return: The fitted PCA model instance.
+        :return: La instancia entrenada del modelo PCA.
         :rtype: PCAFromSVD
-        :raises ValueError: If n_components is invalid or data has incorrect shape.
-        
-        :authors: Tu Nombre
+        :raises ValueError: Si n_components es inválido o si los datos tienen una forma incorrecta.
+
+        :authors: Toledo, Calina, Canteros
         :date: 01/06/2026
-        
-        Notes
+
+        Notas
         -----
-        Uses power iteration + deflation to compute SVD from scratch.
-        Avoids numpy.linalg.svd to satisfy academic "from-scratch" requirements.
+        Utiliza el método de las potencias + deflación para calcular SVD desde cero.
+        Evita usar numpy.linalg.svd para cumplir con los requerimientos académicos de desarrollo propio.
         """
         X = np.asarray(X, dtype=float)
         n_samples, n_features = X.shape
-        
+
         if n_samples < 2:
             raise ValueError("At least 2 samples are required for PCA")
-        
-        # Step 1: Center
+
+        # Paso 1: Centrar
         self.mean_ = np.mean(X, axis=0)
         X_centered = X - self.mean_
-        
-        # Optional: Scale
+
+        # Opcional: Escalar
         if self.scale:
             self.std_ = np.std(X, axis=0, ddof=0)
             self.std_[self.std_ == 0] = 1.0
             X_centered = X_centered / self.std_
-        
-        # Step 2: Custom SVD
+
+        # Paso 2: SVD Propia
         U, S, Vt = _svd_from_scratch(
             X_centered, tol=self.svd_tol, max_iter=self.svd_max_iter
         )
-        
-        # Store results (Vt shape: (k, m))
+
+        # Guardar resultados (forma de Vt: (k, m))
         self.singular_values_ = S
         self.components_ = Vt
-        
-        # Step 3: Variance calculation
+
+        # Paso 3: Cálculo de varianza
         self.explained_variance_ = (S ** 2) / (n_samples - 1)
         total_variance = np.sum(self.explained_variance_)
         self.explained_variance_ratio_ = self.explained_variance_ / total_variance
-        
-        # Step 4: Determine k
+
+        # Paso 4: Determinar k
         self.n_components_ = self._determine_n_components(len(S))
-        
-        # Step 5: Truncate
+
+        # Paso 5: Recortar (Truncar)
         k = self.n_components_
         self.components_ = self.components_[:k]
         self.explained_variance_ = self.explained_variance_[:k]
         self.explained_variance_ratio_ = self.explained_variance_ratio_[:k]
         self.singular_values_ = self.singular_values_[:k]
-        
+
         return self
-    
+
     def transform(self, X: np.ndarray) -> np.ndarray:
         """
-        Project data onto the principal component axes.
-        
-        :param X: Data matrix to transform of shape (n_samples, n_features).
+        Proyecta los datos sobre los ejes de los componentes principales.
+
+        :param X: Matriz de datos a transformar de forma (n_samples, n_features).
         :type X: np.ndarray
-        :return: Transformed data in principal component space.
+        :return: Datos transformados en el espacio de componentes principales.
         :rtype: np.ndarray
-        :raises RuntimeError: If fit has not been called.
-        
+        :raises RuntimeError: Si aún no se ha llamado a fit().
+
         :authors: Toledo, Calina, Canteros
         :date: 01/06/2026
         """
         if self.mean_ is None or self.components_ is None:
             raise RuntimeError("You must call fit() before transform()")
-        
+
         X = np.asarray(X, dtype=float)
         X_centered = X - self.mean_
         if self.scale and self.std_ is not None:
             X_centered = X_centered / self.std_
-            
+
         return X_centered @ self.components_.T
-    
+
     def fit_transform(self, X: np.ndarray) -> np.ndarray:
-        """Fit and transform in one step."""
+        """Entrena el modelo y transforma los datos en un solo paso."""
         return self.fit(X).transform(X)
-    
+
     def inverse_transform(self, Z: np.ndarray) -> np.ndarray:
         """
-        Reconstruct data from principal component space.
-        
-        :param Z: Data in PC space of shape (n_samples, n_components).
+        Reconstruye los datos desde el espacio de componentes principales.
+
+        :param Z: Datos en el espacio de CP de forma (n_samples, n_components).
         :type Z: np.ndarray
-        :return: Reconstructed data in original space.
+        :return: Datos reconstruidos en el espacio original.
         :rtype: np.ndarray
-        :raises RuntimeError: If fit has not been called.
-        
+        :raises RuntimeError: Si aún no se ha llamado a fit().
+
         :authors: Toledo, Calina, Canteros
         :date: 01/06/2026
         """
         if self.mean_ is None or self.components_ is None:
             raise RuntimeError("You must call fit() before inverse_transform()")
-            
+
         Z = np.asarray(Z, dtype=float)
         X_centered_rec = Z @ self.components_
         if self.scale and self.std_ is not None:
             X_centered_rec = X_centered_rec * self.std_
         return X_centered_rec + self.mean_
-    
+
     def _determine_n_components(self, n_available: int) -> int:
-        """Determine effective number of components."""
+        """Determina el número efectivo de componentes."""
         if self.n_components is None:
             return n_available
         if isinstance(self.n_components, int):
@@ -303,9 +302,9 @@ class PCAFromSVD:
             idx = np.where(cum_var >= self.n_components)[0]
             return int(idx[0] + 1) if len(idx) > 0 else n_available
         raise ValueError(f"Invalid n_components type: {type(self.n_components)}")
-    
+
     def plot_variance(self, cumulative: bool = False, ax: Optional[plt.Axes] = None) -> plt.Axes:
-        """Plot explained variance. See previous version for full docstring."""
+        """Grafica la varianza explicada. Ver la versión anterior para el docstring completo."""
         if self.explained_variance_ratio_ is None:
             raise RuntimeError("You must call fit() before plotting variance")
         if ax is None:
